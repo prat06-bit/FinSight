@@ -1,8 +1,46 @@
-# FinSight — Step 2: Risk-Model Evaluation, Threshold Calibration, & Explainability
+# FinSight — Agentic Financial Intelligence / AI Financial Analyst
 
-FinSight implements a leak-free Machine Learning framework for corporate financial deterioration prediction using historical SEC EDGAR filings.
+**FinSight** is an end-to-end AI financial intelligence platform that combines real SEC EDGAR financial filings, macroeconomic regime indicators, leak-free machine learning, time-series forecasting, sector-relative ratio normalization, and local Hybrid RAG (Retrieval-Augmented Generation).
 
 ---
+
+## FinSight Architecture & Roadmap
+
+FinSight is built across 5 modular, leak-free intelligence steps:
+
+| Step | Milestone | Key Capabilities | Status |
+| :--- | :--- | :--- | :---: |
+| **Step 1** | **Data Ingestion & Feature Engineering** | SEC EDGAR 10-K parsing, 27 baseline financial & macro-regime features, DuPont ratio analysis, risk classification dataset | Complete |
+| **Step 2** | **Risk-Model Evaluation & Explainability** | Leak-free 3-stage temporal split (2007–2025), validation threshold calibration, SHAP feature attributions | Complete |
+| **Step 3** | **Financial Forecasting & Walk-Forward Validation** | Time-series revenue forecasting, 10-year walk-forward backtest (2016–2025), Holt Exponential Smoothing vs. XGBoost | Complete |
+| **Step 4** | **Sector-Relative Ratio Normalization** | SIC-based industry grouping, leave-one-out sector medians, 33-feature sector-enhanced model | Complete |
+| **Step 5** | **Hybrid SEC Filing RAG** | Sentence-transformers dense embeddings, ChromaDB vector store, BM25 sparse index, Reciprocal Rank Fusion ($k=60$) | Complete |
+
+---
+
+## Step 1 — Financial Data Ingestion, Macro-Regime Features & Risk Baseline
+
+### Motivation & Objectives
+Corporate financial risk assessment requires granular, standardized financial data derived directly from authoritative regulatory filings. Step 1 establishes the core data ingestion engine and feature engineering pipeline for FinSight, combining SEC EDGAR company financial statements with macroeconomic indicator data.
+
+### 1. SEC EDGAR Ingestion Pipeline
+- **Automated SEC API Integration:** Fetches historical 10-K filing facts and XBRL concepts (Revenue, Net Income, Operating Expenses, Total Assets, Total Liabilities, Equity, Debt, Current Assets, Current Liabilities) across 40 major U.S. corporations (2007–2025).
+- **Rate-Limited & Cached:** Built with standard SEC user-agent headers and local cache layers (`data/cache/`) to comply with SEC EDGAR request limits (< 10 req/s).
+
+### 2. Feature Engineering (27 Baseline Features)
+- **Profitability Ratios:** Gross Margin, Operating Margin, Net Margin, Return on Assets (ROA), Return on Equity (ROE).
+- **Liquidity & Solvency Ratios:** Current Ratio, Quick Ratio, Debt-to-Equity Ratio, Financial Leverage Multiplier.
+- **DuPont Analysis Decomposition:**
+  $$\text{ROE} = \underbrace{\frac{\text{Net Income}}{\text{Revenue}}}_{\text{Net Profit Margin}} \times \underbrace{\frac{\text{Revenue}}{\text{Total Assets}}}_{\text{Asset Turnover}} \times \underbrace{\frac{\text{Total Assets}}{\text{Equity}}}_{\text{Equity Multiplier}}$$
+- **Growth & Momentum:** 1-year Revenue Growth, 3-year Moving Average Margins, Margin Momentum ($\text{Net Margin} - \text{Net Margin 3yr Avg}$).
+- **Macroeconomic Features:** Federal Funds Rate, 10-Year Treasury Yield, Yield Curve Inversion Spread ($\text{10Y Treasury} - \text{Fed Funds}$), CPI Inflation.
+
+### 3. Financial Risk Target Definition
+- **Target Label ($Y \in \{0, 1\}$):** Defined as corporate financial deterioration in the subsequent filing year ($T+1$), indicated by net loss ($\text{Net Income} < 0$), severe operating margin compression ($> 15\%$ YoY drop), or liquidity impairment ($\text{Current Ratio} < 1.0$).
+
+---
+
+## Step 2 — Risk-Model Evaluation, Threshold Calibration, & Explainability
 
 ## 1. Temporal Split Methodology
 
@@ -59,17 +97,17 @@ The locked threshold (`0.30`) selected on Validation was evaluated **exactly onc
 
 ```
 Locked Threshold : 0.30
-Accuracy         : 58.8%
-Precision        : 54.5%
-Recall           : 87.8%  (Caught 72 out of 82 actual deterioration cases)
-F1-Score         : 0.673
+Accuracy         : 55.9%
+Precision        : 52.6%
+Recall           : 85.4%  (Caught 70 out of 82 actual deterioration cases)
+F1-Score         : 0.651
 ROC-AUC          : 0.707  (Out-of-time discriminative ranking)
 PR-AUC           : 0.747  (Precision-Recall area)
 ```
 
 ### Final Test Confusion Matrix (at locked 0.30 threshold)
 
-$$\begin{pmatrix} \text{True Negatives (TN): 28} & \text{False Positives (FP): 60} \\ \text{False Negatives (FN): 10} & \text{True Positives (TP): 72} \end{pmatrix}$$
+$$\begin{pmatrix} \text{True Negatives (TN): 25} & \text{False Positives (FP): 63} \\ \text{False Negatives (FN): 12} & \text{True Positives (TP): 70} \end{pmatrix}$$
 
 ---
 
@@ -78,10 +116,11 @@ $$\begin{pmatrix} \text{True Negatives (TN): 28} & \text{False Positives (FP): 6
 ### Random Split Benchmark (Reference Only)
 > *"Random split benchmark — potentially optimistic and not used as the production evaluation."*
 
-* **Train Accuracy:** 93.4%
-* **Test Accuracy:** 90.4%
-* **Precision:** 0.852
-* **Recall:** 0.784
+* **Train Accuracy:** 90.3%
+* **Test Accuracy:** 68.8%
+* **Precision:** 0.586
+* **Recall:** 0.642
+* **F1-Score:** 0.613
 
 > **Methodological Note:** Random splitting leaks cross-company and macro-economic period signals between train and test sets, yielding overly optimistic metrics. Temporal splitting is required for realistic financial evaluation.
 

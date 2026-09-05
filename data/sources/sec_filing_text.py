@@ -1,9 +1,3 @@
-"""Download and extract text from SEC 10-K filings for RAG ingestion.
-
-Fetches the HTML filing from EDGAR, strips markup, and splits into
-logical sections (Item 1, 1A, 7, 7A, 8) for chunked embedding.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -45,7 +39,6 @@ def download_filing_text(url: str, ticker: str, year: int, filing_date: str = ""
     """Download a 10-K filing and split into sections.
 
     Parameters
-    ----------
     url:
         Full URL to the SEC filing HTML document.
     ticker:
@@ -56,7 +49,6 @@ def download_filing_text(url: str, ticker: str, year: int, filing_date: str = ""
         Filing date string for metadata.
 
     Returns
-    -------
     list[FilingSection]
         Extracted sections with cleaned text.
     """
@@ -149,7 +141,7 @@ def _split_into_sections(
         end = section_positions[i + 1][1] if i + 1 < len(section_positions) else len(text)
         section_text = text[start:end].strip()
 
-        # Skip very short sections (likely just headers)
+        # Skip very short sections 
         if len(section_text) < 100:
             continue
 

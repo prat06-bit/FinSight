@@ -1,5 +1,4 @@
 """Macro-economic data source for FinSight.
-
 Provides annual US macroeconomic indicators (Federal Funds Rate, 10-Year Treasury Yield,
 Yield Curve Slope 10Y-2Y, CPI Inflation) for incorporating macro-regime signals into
 financial ML risk models.
@@ -51,7 +50,6 @@ _HISTORICAL_MACRO: dict[int, MacroIndicators] = {
 
 class MacroSource:
     """Provides macro-economic regime data for any target fiscal year."""
-
     def get_indicators(self, year: int) -> MacroIndicators:
         """Return macro indicators for *year*. Defaults to nearest year if outside 2005-2025."""
         if year in _HISTORICAL_MACRO:

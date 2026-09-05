@@ -1,9 +1,7 @@
 """Abstract base for financial data sources."""
 
 from __future__ import annotations
-
 from typing import Protocol
-
 from data.models import CompanyFinancials
 
 

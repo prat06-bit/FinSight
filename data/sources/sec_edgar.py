@@ -1,5 +1,4 @@
 """SEC EDGAR data source — Company Facts API (XBRL) and Submissions API.
-
 This is the **primary** data source for FinSight.  It pulls structured
 annual financials for any US public company using the free, keyless SEC
 EDGAR APIs.
@@ -21,9 +20,7 @@ from ml.sector import sic_to_sector
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
 # XBRL tag mapping — multiple fallbacks per financial concept
-# ---------------------------------------------------------------------------
 _XBRL_TAG_MAP: dict[str, list[str]] = {
     "revenue": [
         "Revenues",
@@ -117,7 +114,6 @@ _XBRL_TAG_MAP: dict[str, list[str]] = {
 
 class SECEdgarSource:
     """Fetch structured financials from the SEC Company Facts API (XBRL).
-
     Rate-limited to comply with SEC's 10 requests/second policy.
     """
 
@@ -129,7 +125,7 @@ class SECEdgarSource:
         self._last_request_time: float = 0.0
         self._ticker_cache: dict[str, dict[str, Any]] | None = None
 
-    # -- public interface ---------------------------------------------------
+    #  public interface 
 
     def fetch_financials(self, ticker: str) -> CompanyFinancials:
         """Return annual financial records for *ticker* from SEC EDGAR."""
@@ -268,7 +264,7 @@ class SECEdgarSource:
 
         return results
 
-    # -- private helpers ----------------------------------------------------
+    #  private helpers 
 
     def _rate_limit(self) -> None:
         elapsed = time.monotonic() - self._last_request_time
@@ -330,7 +326,6 @@ class SECEdgarSource:
         is_duration: bool = True,
     ) -> dict[int, float]:
         """Try multiple XBRL tags and return {fiscal_year: value} for 10-K filings.
-
         Combines values across all tag fallbacks (prioritizing earlier tags in the list)
         and determines fiscal year from period end date rather than SEC filing fy metadata.
         """

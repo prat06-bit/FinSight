@@ -22,11 +22,7 @@ REQUIRED_COLUMNS = {
     "current_liabilities",
 }
 
-
-# ---------------------------------------------------------------------------
 # Loading helpers
-# ---------------------------------------------------------------------------
-
 
 def load_financial_data(filepath: str | Path) -> list[MoneyRecord]:
     """Load yearly financial records from a CSV file (backward compat)."""
@@ -62,9 +58,7 @@ def load_from_ticker(
     source: str = "sec_edgar",
 ) -> list[MoneyRecord]:
     """Fetch live financial data for *ticker* and return as MoneyRecords.
-
-    Parameters
-    ----------
+    Parameters:
     ticker:
         Stock ticker symbol (e.g. ``"AAPL"``).
     source:
@@ -97,10 +91,7 @@ def load_from_ticker(
     return records
 
 
-# ---------------------------------------------------------------------------
 # Metrics & reporting (unchanged logic, kept for backward compat)
-# ---------------------------------------------------------------------------
-
 
 def calculate_metrics(records: Iterable[MoneyRecord]) -> list[MoneyRecord]:
     """Add profitability, liquidity, leverage, and growth metrics."""
@@ -196,11 +187,7 @@ def format_report(records: list[MoneyRecord]) -> str:
 
     return "\n".join(lines)
 
-
-# ---------------------------------------------------------------------------
 # Private helpers
-# ---------------------------------------------------------------------------
-
 
 def _coerce_record(row: dict[str, str]) -> MoneyRecord:
     record: MoneyRecord = {}

@@ -1,14 +1,11 @@
 """Financial Forecasting & Walk-Forward Validation Engine for FinSight.
-
 Implements leakage-safe time-series forecasting across multiple baselines:
 - Naive Last-Year Forecast (y_t = y_{t-1})
 - Holt Linear Exponential Smoothing (with 95% prediction intervals)
 - XGBoost ML Regressor (with and without Macro-Regime features)
-
 Supports two distinct evaluation scopes:
 1. Aggregate 40-Company Pooled Walk-Forward Benchmark (2016-2025)
 2. Ticker-Specific Walk-Forward Backtest (e.g. AAPL 2016-2025)
-
 Handles unequal company filing histories (e.g. AAPL 19 yrs, GOOGL 13 yrs, AVGO 10 yrs) safely.
 """
 
@@ -18,9 +15,7 @@ import logging
 import warnings
 from dataclasses import dataclass, field
 from typing import Any
-
 import numpy as np
-
 from analysis.financial_data import MoneyRecord
 from data.sources.macro import MacroSource
 from data.sources.sec_edgar import SECEdgarSource
@@ -139,7 +134,6 @@ def run_walk_forward_backtest(
     end_backtest_year: int = 2025,
 ) -> dict[str, Any]:
     """Execute expanding-window walk-forward validation across historical backtest years.
-
     Handles unequal company history safely (e.g. AAPL 19 yrs, GOOGL 13 yrs, AVGO 10 yrs).
     Returns both 40-company pooled benchmark and per-ticker benchmark metrics.
     """
@@ -302,7 +296,6 @@ def generate_ticker_forecast(
     periods: int = 1,
 ) -> ForecastResult:
     """Generate next-year point forecast + 95% prediction intervals for a ticker.
-
     Computes both ticker-specific backtest and pooled 40-company backtest.
     """
     sec_source = SECEdgarSource()

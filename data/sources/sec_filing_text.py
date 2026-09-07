@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 # Section patterns in 10-K filings
 _SECTION_PATTERNS: list[tuple[str, str]] = [
-    ("Item 1 - Business", r"item\s*1[\.\s\-\—]*business"),
-    ("Item 1A - Risk Factors", r"item\s*1a[\.\s\-\—]*risk\s*factors"),
-    ("Item 7 - MD&A", r"item\s*7[\.\s\-\—]*(management.s?\s*discussion|md\s*&\s*a)"),
-    ("Item 7A - Market Risk", r"item\s*7a[\.\s\-\—]*(quantitative|market\s*risk)"),
-    ("Item 8 - Financial Statements", r"item\s*8[\.\s\-\—]*financial\s*statements"),
+    ("Item 1 - Business", r"item\s*1[\.\s\-\—]+business"),
+    ("Item 1A - Risk Factors", r"item\s*1a[\.\s\-\—]+risk\s*factors"),
+    ("Item 7 - MD&A", r"item\s*7[\.\s\-\—]+(?:management.s?\s*discussion|md\s*&\s*a)"),
+    ("Item 7A - Market Risk", r"item\s*7a[\.\s\-\—]+(?:quantitative|market\s*risk)"),
+    ("Item 8 - Financial Statements", r"item\s*8[\.\s\-\—]+financial\s*statements"),
 ]
 
 
@@ -33,12 +33,20 @@ class FilingSection:
     text: str
     filing_date: str = ""
     source_url: str = ""
+    company_name: str = ""
 
 
-def download_filing_text(url: str, ticker: str, year: int, filing_date: str = "") -> list[FilingSection]:
+def download_filing_text(
+    url: str,
+    ticker: str,
+    year: int,
+    filing_date: str = "",
+    company_name: str = "",
+) -> list[FilingSection]:
     """Download a 10-K filing and split into sections.
 
     Parameters
+    ----------
     url:
         Full URL to the SEC filing HTML document.
     ticker:
@@ -47,8 +55,11 @@ def download_filing_text(url: str, ticker: str, year: int, filing_date: str = ""
         Fiscal year of the filing.
     filing_date:
         Filing date string for metadata.
+    company_name:
+        Optional company full name.
 
     Returns
+    -------
     list[FilingSection]
         Extracted sections with cleaned text.
     """
@@ -61,7 +72,7 @@ def download_filing_text(url: str, ticker: str, year: int, filing_date: str = ""
         raw_text = _fetch_and_clean(url)
         cache_path.write_text(raw_text, encoding="utf-8")
 
-    sections = _split_into_sections(raw_text, ticker, year, filing_date, url)
+    sections = _split_into_sections(raw_text, ticker, year, filing_date, url, company_name)
 
     if not sections:
         # If section splitting fails, return the whole document as one chunk
@@ -73,6 +84,7 @@ def download_filing_text(url: str, ticker: str, year: int, filing_date: str = ""
                 text=raw_text[:50000],  # Cap at 50k chars
                 filing_date=filing_date,
                 source_url=url,
+                company_name=company_name,
             )
         ]
 
@@ -81,7 +93,7 @@ def download_filing_text(url: str, ticker: str, year: int, filing_date: str = ""
 
 
 def _fetch_and_clean(url: str) -> str:
-    """Fetch HTML from SEC and strip to plain text."""
+    """Fetch HTML from SEC and strip to plain text, preserving table row structures."""
     time.sleep(SEC_RATE_LIMIT)
     client = httpx.Client(
         headers={"User-Agent": SEC_USER_AGENT},
@@ -97,13 +109,21 @@ def _fetch_and_clean(url: str) -> str:
 
     soup = BeautifulSoup(html, "lxml")
 
-    # Remove scripts, styles, and non-content elements
-    for tag in soup(["script", "style", "meta", "link", "img"]):
+    # Remove non-content elements
+    for tag in soup(["script", "style", "meta", "link", "img", "noscript"]):
         tag.decompose()
+
+    # Format HTML table rows cleanly so financial metric cell values stay associated
+    for tr in soup.find_all("tr"):
+        cells = [td.get_text(strip=True) for td in tr.find_all(["td", "th"])]
+        non_empty = [c for c in cells if c]
+        if non_empty:
+            row_text = " | ".join(non_empty)
+            tr.replace_with(soup.new_string(f"\n{row_text}\n"))
 
     text = soup.get_text(separator="\n")
 
-    # Clean up whitespace
+    # Clean up whitespace line by line
     lines = [line.strip() for line in text.splitlines()]
     text = "\n".join(line for line in lines if line)
 
@@ -119,15 +139,16 @@ def _split_into_sections(
     year: int,
     filing_date: str,
     source_url: str,
+    company_name: str = "",
 ) -> list[FilingSection]:
-    """Split the filing text into known 10-K sections."""
+    """Split filing text into known 10-K sections."""
     text_lower = text.lower()
     section_positions: list[tuple[str, int]] = []
 
     for section_name, pattern in _SECTION_PATTERNS:
         matches = list(re.finditer(pattern, text_lower))
         if matches:
-            # Use the last match (often the actual section, not the TOC)
+            # Use the last match to avoid matching the Table of Contents index
             section_positions.append((section_name, matches[-1].start()))
 
     if not section_positions:
@@ -141,7 +162,7 @@ def _split_into_sections(
         end = section_positions[i + 1][1] if i + 1 < len(section_positions) else len(text)
         section_text = text[start:end].strip()
 
-        # Skip very short sections 
+        # Skip very short sections
         if len(section_text) < 100:
             continue
 
@@ -157,6 +178,7 @@ def _split_into_sections(
                 text=section_text,
                 filing_date=filing_date,
                 source_url=source_url,
+                company_name=company_name,
             )
         )
 

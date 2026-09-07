@@ -21,28 +21,28 @@ BASELINE_FEATURE_COLUMNS = [
     "revenue_growth",
     "free_cash_flow_margin",
     "interest_coverage",
-    # Financial Distress & Composite Metrics
+    # Financial Distress & Composite Metrics :
     "altman_z_score",
     "asset_turnover",
     "quality_of_earnings",
     "dupont_equity_multiplier",
-    # Macroeconomic Regime Signals
+    # Macroeconomic Regime Signals :
     "fed_funds_rate",
     "treasury_10y_yield",
     "yield_curve_slope",
     "cpi_inflation",
-    # Trends (1-year deltas)
+    # Trends (1-year deltas) :
     "net_margin_trend",
     "current_ratio_trend",
     "debt_to_equity_trend",
-    # Rolling 3-year averages
+    # Rolling 3-year averages : 
     "net_margin_3yr_avg",
     "current_ratio_3yr_avg",
     "debt_to_equity_3yr_avg",
-    # Momentum (2-year rate of change)
+    # Momentum (2-year rate of change) :
     "revenue_momentum",
     "margin_momentum",
-    # Volatility
+    # Volatility :
     "revenue_volatility",
 ]
 

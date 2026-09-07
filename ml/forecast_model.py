@@ -1,15 +1,11 @@
 """Time-series financial forecasting for FinSight.
-
 Uses exponential smoothing (Holt) for 5+ data points, falls back to
 simple linear regression for shorter series.
 """
 
 from __future__ import annotations
-
 import logging
-
 import numpy as np
-
 from analysis.financial_data import MoneyRecord
 
 logger = logging.getLogger(__name__)
@@ -20,7 +16,6 @@ def forecast_revenue(
     periods: int = 1,
 ) -> list[dict[str, float | int | str]]:
     """Forecast future revenue and net income.
-
     Uses Holt exponential smoothing when >= 5 data points are available,
     otherwise falls back to simple linear regression.
     """

@@ -1,5 +1,4 @@
 """Training pipeline for FinSight ML risk model.
-
 Fetches historical financials for multiple companies from SEC EDGAR,
 engineers features, and trains an XGBoost classifier to predict
 financial health deterioration.
@@ -9,7 +8,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-
 import joblib
 import numpy as np
 
@@ -30,7 +28,6 @@ def collect_training_data(
     feature_columns: list[str] | None = None,
 ) -> tuple[list[list[float]], list[int], list[int]]:
     """Fetch financials for *tickers*, compute features, and create labels.
-
     Supports sector-relative feature computation using point-in-time,
     leave-one-out peer medians.
     """
@@ -119,9 +116,7 @@ def train_risk_model(
     cutoff_year: int = 2020,
 ) -> dict[str, float]:
     """Train an XGBoost classifier on multi-company data.
-
-    Parameters
-    ----------
+    Parameters:
     tickers:
         List of stock tickers (defaults to 40 non-financial S&P 500 companies).
     split_strategy:

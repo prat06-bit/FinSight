@@ -1,10 +1,8 @@
 """Evaluation audit & ablation module for FinSight ML risk model.
-
 Implements a leak-free three-stage temporal methodology:
 - TRAIN: 2007–2017
 - VALIDATION: 2018–2020 (used for threshold selection and probability calibration)
 - FINAL TEST: 2021–2025 (untouched during tuning, evaluated exactly once)
-
 Supports Model Ablation Experiment:
 - Model A Baseline: Financial + Macro features (27 features)
 - Model B Enhanced: Financial + Macro + Sector-Relative features (33 features)
@@ -29,7 +27,6 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
-
 from ml.features import BASELINE_FEATURE_COLUMNS, FEATURE_COLUMNS, SECTOR_FEATURE_COLUMNS
 from ml.train import DEFAULT_TICKERS, collect_training_data
 
@@ -262,16 +259,12 @@ def print_audit_summary(report: dict[str, Any]) -> None:
 
     ablation = run_ablation_experiment()
 
-    print("=================================================================")
     print("      FINSIGHT STEP 4: SECTOR-ENHANCED TEMPORAL EVALUATION AUDIT ")
-    print("=================================================================")
     print(f"Total Feature Count: {report['feature_count']} features (27 baseline + 6 sector-relative)")
-    print("-----------------------------------------------------------------")
     print("1. THREE-STAGE CLASS DISTRIBUTION")
     print(f"  Train (2007-2017) : {cd['train_2007_2017']['total_samples']:<3} samples | Pos Rate: {cd['train_2007_2017']['positive_rate']:.1%}")
     print(f"  Val   (2018-2020) : {cd['validation_2018_2020']['total_samples']:<3} samples | Pos Rate: {cd['validation_2018_2020']['positive_rate']:.1%}")
     print(f"  Test  (2021-2025) : {cd['test_2021_2025']['total_samples']:<3} samples | Pos Rate: {cd['test_2021_2025']['positive_rate']:.1%} (Regime Shift)")
-    print("-----------------------------------------------------------------")
     print("2. ABLATION EXPERIMENT: BASELINE (27 Feats) vs SECTOR-ENHANCED (33 Feats)")
     ma = ablation["model_a_baseline"]
     mb = ablation["model_b_enhanced"]
@@ -300,7 +293,6 @@ def print_audit_summary(report: dict[str, Any]) -> None:
     print("4. COMPARATIVE BENCHMARK")
     print(f"  {rand_bm['label']}")
     print(f"  Train Acc: {rand_bm['train_accuracy']:.1%} | Test Acc: {rand_bm['test_accuracy']:.1%} | Precision: {rand_bm['precision']:.3f} | Recall: {rand_bm['recall']:.3f} | F1: {rand_bm['f1']:.3f}")
-    print("=================================================================")
 
 
 if __name__ == "__main__":

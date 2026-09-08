@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-
 import numpy as np
-
 from analysis.financial_data import MoneyRecord
 from ml.features import FEATURE_COLUMNS, extract_feature_vector, latest_feature_row
 
@@ -167,9 +165,7 @@ def _drivers_from_importances(importances: dict[str, float], row: MoneyRecord) -
     return drivers if drivers else ["Insufficient data for detailed drivers"]
 
 
-# ---------------------------------------------------------------------------
 # Rule-based scoring helpers
-# ---------------------------------------------------------------------------
 
 def _score_signal(value: float, strong: float, weak: float, name: str, drivers: list[str]) -> int:
     if value >= strong:

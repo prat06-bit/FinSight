@@ -1,5 +1,4 @@
 """Sector-Relative Ratio Normalization Engine for FinSight.
-
 Implements leakage-safe industry ratio benchmarking:
 - Deterministic SIC (Standard Industrial Classification) to Sector Grouping
 - Leave-One-Out Peer Median Calculation (excludes focal company from its own benchmark)
@@ -18,9 +17,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any
-
 import numpy as np
-
 from analysis.financial_data import MoneyRecord
 
 logger = logging.getLogger(__name__)
@@ -37,7 +34,6 @@ SECTOR_FEATURE_COLUMNS = [
 
 def sic_to_sector(sic_code: str | int) -> str:
     """Map a 4-digit or 2-digit SEC SIC code to a standard industry sector group.
-
     Deterministic grouping based on SEC EDGAR classification taxonomy.
     """
     sic_str = str(sic_code).strip()
@@ -76,7 +72,6 @@ def compute_sector_relative_features(
     use_leave_one_out: bool = True,
 ) -> list[MoneyRecord]:
     """Compute leakage-safe sector-relative features across all company-year records.
-
     Leakage Prevention Rules:
     - Point-In-Time: For an observation at year T, only peer records from year T are evaluated.
     - Leave-One-Out: Excludes focal company C from its own sector median calculation when enabled.

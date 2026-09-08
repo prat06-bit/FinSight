@@ -1,10 +1,8 @@
 """Explainability module for FinSight ML risk model.
-
 Uses SHAP (SHapley Additive exPlanations) to interpret XGBoost risk model predictions:
 - Global feature importance (mean absolute SHAP value across training observations)
 - Top 10 feature breakdown with direction of effect (increases risk vs. decreases risk)
 - Local feature explanations for individual company records (e.g. Apple / AAPL)
-
 Disclaimer: SHAP metrics capture feature attribution and empirical correlation within
 the model's learned structure; they do not imply direct causal influence.
 """
@@ -13,10 +11,8 @@ from __future__ import annotations
 
 import logging
 from typing import Any
-
 import numpy as np
 import shap
-
 from analysis.financial_data import MoneyRecord
 from data.sources.sec_edgar import SECEdgarSource
 from ml.features import FEATURE_COLUMNS, latest_feature_row
@@ -178,12 +174,9 @@ def print_explainability_summary() -> None:
     global_info = compute_global_shap_importance()
     aapl_info = explain_company_risk("AAPL")
 
-    print("=================================================================")
     print("           FINSIGHT RISK MODEL SHAP EXPLAINABILITY AUDIT         ")
-    print("=================================================================")
     print(f"Model       : {global_info['model_type']}")
     print(f"Training N  : {global_info['sample_count']} historical samples")
-    print("-----------------------------------------------------------------")
     print("GLOBAL TOP 10 SHAP FEATURES")
     print("Rank | Feature                   | Mean |SHAP| | Direction / Effect")
     print("-----|---------------------------|-------------|--------------------------------")
@@ -199,7 +192,6 @@ def print_explainability_summary() -> None:
     print("-----------------------------------------------------------------")
     print("CAUSALITY DISCLAIMER:")
     print(f"  {global_info['causality_disclaimer']}")
-    print("=================================================================")
 
 
 if __name__ == "__main__":

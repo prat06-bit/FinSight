@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_core.messages import SystemMessage, HumanMessage
 from config import NVIDIA_API_KEY, NVIDIA_LLM_MODEL
@@ -20,7 +19,6 @@ def generate_answer(
         temperature=0.2,
         max_completion_tokens=1024,
     )
-    
     # Format context
     context_text = "\n\n".join(
         f"Source: {chunk.get('metadata', {}).get('section_name', 'Unknown Section')} "
@@ -28,7 +26,6 @@ def generate_answer(
         f"Text: {chunk.get('text', '')}"
         for chunk in retrieved_chunks
     )
-    
     # Format financial summary
     summary_text = (
         f"Latest Year: {financial_summary.get('latest_year', 'N/A')}\n"

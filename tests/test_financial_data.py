@@ -1,7 +1,6 @@
 """Tests for the analysis layer — metrics, summaries, and reports."""
 
 from __future__ import annotations
-
 from analysis.financial_data import (
     MoneyRecord,
     calculate_metrics,
@@ -10,14 +9,12 @@ from analysis.financial_data import (
     summarize_financials,
 )
 
-
 class TestLoadFinancialData:
     def test_loads_and_sorts_by_year(self) -> None:
         records = load_financial_data("data/financial_data.csv")
         years = [record["year"] for record in records]
         assert years == sorted(years)
         assert years[0] == 2019
-
     def test_skips_malformed_rows(self) -> None:
         """The CSV has a corrupted last line — it should be skipped."""
         records = load_financial_data("data/financial_data.csv")
@@ -29,7 +26,6 @@ class TestLoadFinancialData:
 class TestCalculateMetrics:
     def test_adds_ratios_and_growth(self, sample_records: list[MoneyRecord]) -> None:
         metrics = calculate_metrics(sample_records)
-
         assert metrics[0]["revenue_growth"] is None
         assert abs(metrics[1]["revenue_growth"] - 0.10) < 0.01  # 10% growth
         assert abs(metrics[1]["gross_margin"] - (450_000 / 1_100_000)) < 0.001
@@ -47,7 +43,6 @@ class TestSummarizeFinancials:
         assert summary["latest_year"] == 2024
         assert summary["revenue"] == 1_100_000.0
         assert "health_signal" in summary
-
     def test_includes_ticker(self, sample_records: list[MoneyRecord]) -> None:
         summary = summarize_financials(sample_records)
         assert summary["ticker"] == "TEST"

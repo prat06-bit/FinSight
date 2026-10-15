@@ -1,18 +1,13 @@
 """Reciprocal Rank Fusion (RRF) for combining dense + sparse retrieval.
-
-RRF assigns each document a score of ``1 / (k + rank)`` from each
+RRF assigns each document a score of 1 / (k + rank)`from each
 retrieval source, then sums across sources. This rank-based method
 is robust because it depends only on candidate ordering, not on raw
-score scale differences.
-
-Reference: Cormack, Clarke & Buettcher (2009).
-"""
+score scale differences. """
 
 from __future__ import annotations
 
 import logging
 from typing import Any
-
 from config import RAG_RRF_K
 from rag.models import RetrievalResult
 
@@ -26,7 +21,6 @@ def rrf_fuse(
     final_top_k: int = 5,
 ) -> list[RetrievalResult]:
     """Fuse dense and BM25 result lists via Reciprocal Rank Fusion.
-
     Parameters
     ----------
     dense_results:
@@ -37,7 +31,6 @@ def rrf_fuse(
         RRF smoothing constant (default 60).
     final_top_k:
         Number of results to return after fusion.
-
     Returns
     -------
     list[RetrievalResult]
@@ -59,7 +52,6 @@ def rrf_fuse(
         rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + 1.0 / (k + rank)
         if doc_id not in doc_lookup:
             doc_lookup[doc_id] = doc
-
     # BM25 candidates
     for rank, doc in enumerate(bm25_results, start=1):
         doc_id = doc["id"]
@@ -70,12 +62,10 @@ def rrf_fuse(
 
     # Sort by RRF score descending
     sorted_ids = sorted(rrf_scores, key=lambda x: rrf_scores[x], reverse=True)
-
     results: list[RetrievalResult] = []
     for doc_id in sorted_ids[:final_top_k]:
         doc = doc_lookup[doc_id]
         meta = doc.get("metadata", {})
-        
         # Determine method contribution tag for debugging
         d_rank = dense_ranks.get(doc_id)
         b_rank = bm25_ranks.get(doc_id)
@@ -85,7 +75,6 @@ def rrf_fuse(
             method_tag = "dense"
         else:
             method_tag = "bm25"
-
         year_val = meta.get("filing_year", 0)
         try:
             int_year = int(year_val)

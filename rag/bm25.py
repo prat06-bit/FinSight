@@ -1,5 +1,4 @@
 """BM25 sparse retriever for financial document search.
-
 Uses ``rank_bm25.BM25Okapi`` with financial-domain-aware tokenization
 that preserves dollar amounts, percentages, fiscal years, and
 accounting terms. The index is persisted to disk as a pickle.
@@ -12,9 +11,7 @@ import pickle
 import re
 from pathlib import Path
 from typing import Any
-
 from rank_bm25 import BM25Okapi
-
 from config import RAG_BM25_INDEX_PATH
 
 logger = logging.getLogger(__name__)
@@ -30,7 +27,6 @@ _FINANCIAL_TERMS = frozenset({
 
 def _tokenize(text: str) -> list[str]:
     """Financial-aware tokenizer.
-
     Preserves:
     - Dollar amounts (``$1.2B``, ``$500M``)
     - Percentages (``15.3%``)
@@ -80,7 +76,7 @@ class BM25Index:
 
     def __init__(self) -> None:
         self._bm25: BM25Okapi | None = None
-        self._documents: list[dict[str, Any]] = []  # {id, text, metadata}
+        self._documents: list[dict[str, Any]] = []  
         self._tokenized_corpus: list[list[str]] = []
 
     @property
@@ -110,7 +106,6 @@ class BM25Index:
         section: str | None = None,
     ) -> list[dict[str, Any]]:
         """Search with optional metadata pre-filtering.
-
         Returns list of ``{id, text, metadata, score}``.
         """
         if not self.is_built:
@@ -128,7 +123,6 @@ class BM25Index:
                 norm_year = int(filing_year)
             except (ValueError, TypeError):
                 norm_year = str(filing_year)
-
         candidate_indices = list(range(len(self._documents)))
         if norm_ticker or norm_year or filing_type or section:
             filtered = []
@@ -153,7 +147,6 @@ class BM25Index:
 
         if not candidate_indices:
             return []
-
         # Score all documents, then filter to candidates
         scores = self._bm25.get_scores(query_tokens)
 

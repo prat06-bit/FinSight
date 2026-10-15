@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+.venv311/
+
+# Environment
+.env
+
+# Data cache (fetched from SEC/Yahoo)
+data/cache/
+data/chroma_db/
+
+# ML trained models (large binary files)
+ml/models/*.joblib
+ml/models/*.pkl
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

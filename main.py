@@ -17,13 +17,11 @@ logging.basicConfig(
     stream=sys.stderr,
 )
 
-
 def _load_records(args: argparse.Namespace) -> tuple[list, str]:
     """Load financial records from ticker or CSV file."""
     if getattr(args, "ticker", None):
         return load_from_ticker(args.ticker, source=args.source), args.ticker.upper()
     return load_financial_data(args.data), ""
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -176,7 +174,6 @@ def main() -> None:
 
     else:
         parser.error(f"Unknown command: {command}")
-
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ModuleNotFoundError:  # python-dotenv is optional at import time
+except ModuleNotFoundError: 
     pass
 
 # Paths
@@ -54,9 +54,7 @@ RAG_DENSE_TOP_K: int = int(os.getenv("RAG_DENSE_TOP_K", "20"))
 RAG_BM25_TOP_K: int = int(os.getenv("RAG_BM25_TOP_K", "20"))
 RAG_RRF_K: int = int(os.getenv("RAG_RRF_K", "60"))
 
-# ---------------------------------------------------------------------------
 # ML
-# ---------------------------------------------------------------------------
 RISK_MODEL_PATH = ML_MODELS_DIR / "risk_model.joblib"
 FORECAST_LOOKBACK_YEARS: int = int(os.getenv("FORECAST_LOOKBACK_YEARS", "5"))
 

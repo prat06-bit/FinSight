@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import pytest
-
 from analysis.financial_data import MoneyRecord
-
 
 @pytest.fixture
 def sample_records() -> list[MoneyRecord]:

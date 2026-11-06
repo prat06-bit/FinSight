@@ -1,5 +1,4 @@
 """LangGraph agent tools for FinSight.
-
 Defines LangChain @tool functions and a helper to create the NVIDIA LLM,
 used by the LangGraph agentic workflow.
 """
